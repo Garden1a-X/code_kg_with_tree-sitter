@@ -1,0 +1,350 @@
+[
+  {
+    "id": "1",
+    "name": "/data/xuao/code_kg/parser/../data/linux_data/arch/alpha/boot/tools/mkbb.c",
+    "type": "FILE"
+  },
+  {
+    "id": "2",
+    "name": "main",
+    "type": "FUNCTION"
+  },
+  {
+    "id": "8",
+    "name": "bootblock_from_disk",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "9",
+    "name": "bootloader_image",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "10",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "11",
+    "name": "i",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "12",
+    "name": "nread",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "13",
+    "name": "argc",
+    "type": "VARIABLE",
+    "scope": "main",
+    "role": "param"
+  },
+  {
+    "id": "14",
+    "name": "argv",
+    "type": "VARIABLE",
+    "scope": "main",
+    "role": "param"
+  },
+  {
+    "id": "3",
+    "name": "disklabel",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "4",
+    "name": "d_partition",
+    "type": "STRUCT",
+    "scope": "disklabel"
+  },
+  {
+    "id": "5",
+    "name": "d_partition",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "6",
+    "name": "bootblock",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "7",
+    "name": "__bootblock",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "15",
+    "name": "d_magic",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "16",
+    "name": "d_type",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "17",
+    "name": "d_typename",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "18",
+    "name": "d_packname",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "19",
+    "name": "d_secsize",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "20",
+    "name": "d_nsectors",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "21",
+    "name": "d_ntracks",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "22",
+    "name": "d_ncylinders",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "23",
+    "name": "d_secpercyl",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "24",
+    "name": "d_secprtunit",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "25",
+    "name": "d_sparespertrack",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "26",
+    "name": "d_sparespercyl",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "27",
+    "name": "d_acylinders",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "28",
+    "name": "d_rpm",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "29",
+    "name": "d_headswitch",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "30",
+    "name": "d_drivedata",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "31",
+    "name": "d_spare",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "32",
+    "name": "d_magic2",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "33",
+    "name": "d_checksum",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "34",
+    "name": "d_npartitions",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "35",
+    "name": "d_bbsize",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "36",
+    "name": "p_size",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "37",
+    "name": "p_offset",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "38",
+    "name": "p_fsize",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "39",
+    "name": "p_fstype",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "40",
+    "name": "p_frag",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "41",
+    "name": "p_cpg",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "42",
+    "name": "d_partitions",
+    "type": "FIELD",
+    "scope": "disklabel"
+  },
+  {
+    "id": "43",
+    "name": "p_size",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "44",
+    "name": "p_offset",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "45",
+    "name": "p_fsize",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "46",
+    "name": "p_fstype",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "47",
+    "name": "p_frag",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "48",
+    "name": "p_cpg",
+    "type": "FIELD",
+    "scope": "d_partition"
+  },
+  {
+    "id": "49",
+    "name": "__pad1",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "50",
+    "name": "__label",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "51",
+    "name": "__u1",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "52",
+    "name": "__pad2",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "53",
+    "name": "__checksum",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "54",
+    "name": "__u2",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "55",
+    "name": "bootblock_bytes",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "56",
+    "name": "bootblock_quadwords",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "57",
+    "name": "bootblock_label",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  },
+  {
+    "id": "58",
+    "name": "bootblock_checksum",
+    "type": "FIELD",
+    "scope": "__bootblock"
+  }
+]
