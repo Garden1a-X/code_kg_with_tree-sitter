@@ -1,0 +1,11 @@
+matplotlib==3.10.3
+networkx==3.4.2
+numpy==2.2.6
+packaging==25.0
+pillow==11.2.1
+psutil==7.0.0
+pyparsing==3.2.3
+python-dateutil==2.8.2
+six==1.16.0
+tqdm==4.67.1
+tree_sitter==0.20.1
