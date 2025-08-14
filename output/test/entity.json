@@ -1,0 +1,107 @@
+[
+  {
+    "id": "1",
+    "name": "/data/xuao/code_kg/parser/../data/test.c",
+    "type": "FILE"
+  },
+  {
+    "id": "2",
+    "name": "handler_fn",
+    "type": "FUNCTION"
+  },
+  {
+    "id": "3",
+    "name": "helper",
+    "type": "FUNCTION"
+  },
+  {
+    "id": "4",
+    "name": "set_handler",
+    "type": "FUNCTION"
+  },
+  {
+    "id": "5",
+    "name": "main",
+    "type": "FUNCTION"
+  },
+  {
+    "id": "8",
+    "name": "global_var",
+    "type": "VARIABLE",
+    "scope": "global"
+  },
+  {
+    "id": "9",
+    "name": "fp",
+    "type": "VARIABLE",
+    "scope": "set_handler"
+  },
+  {
+    "id": "10",
+    "name": "local",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "11",
+    "name": "pt",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "12",
+    "name": "ops",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "13",
+    "name": "fp",
+    "type": "VARIABLE",
+    "scope": "main"
+  },
+  {
+    "id": "14",
+    "name": "param",
+    "type": "VARIABLE",
+    "scope": "helper",
+    "role": "param"
+  },
+  {
+    "id": "15",
+    "name": "fn",
+    "type": "VARIABLE",
+    "scope": "set_handler",
+    "role": "param"
+  },
+  {
+    "id": "6",
+    "name": "Point",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "7",
+    "name": "Ops",
+    "type": "STRUCT",
+    "scope": "global"
+  },
+  {
+    "id": "16",
+    "name": "x",
+    "type": "FIELD",
+    "scope": "Point"
+  },
+  {
+    "id": "17",
+    "name": "y",
+    "type": "FIELD",
+    "scope": "Point"
+  },
+  {
+    "id": "18",
+    "name": "handler",
+    "type": "FIELD",
+    "scope": "Ops"
+  }
+]

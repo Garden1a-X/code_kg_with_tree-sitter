@@ -1,0 +1,372 @@
+[
+  {
+    "head": "8",
+    "tail": "19",
+    "type": "CALLS"
+  },
+  {
+    "head": "9",
+    "tail": "2",
+    "type": "CALLS"
+  },
+  {
+    "head": "10",
+    "tail": "5",
+    "type": "CALLS"
+  },
+  {
+    "head": [
+      "24"
+    ],
+    "tail": "2",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "16",
+    "tail": "5",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": [
+      "26"
+    ],
+    "tail": "16",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "35",
+    "tail": "13",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "1",
+    "tail": "2",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "3",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "4",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "5",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "6",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "7",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "8",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "9",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "10",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "28",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "29",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "30",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "31",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "11",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "32",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "12",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "13",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "14",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "2",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "3",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "4",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "5",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "6",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "7",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "8",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "9",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "10",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "28",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "29",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "30",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "31",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "11",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "32",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "12",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "13",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "27",
+    "tail": "14",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "4",
+    "tail": "17",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "5",
+    "tail": "18",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "8",
+    "tail": "19",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "9",
+    "tail": "20",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "10",
+    "tail": "21",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "10",
+    "tail": "22",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "30",
+    "tail": "36",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "6",
+    "tail": "15",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "10",
+    "tail": "16",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "33",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "34",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "35",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "4",
+    "tail": [
+      "23"
+    ],
+    "type": "RETURNS"
+  },
+  {
+    "head": "5",
+    "tail": [
+      "26"
+    ],
+    "type": "RETURNS"
+  },
+  {
+    "head": "6",
+    "tail": "15",
+    "type": "RETURNS"
+  },
+  {
+    "head": "4",
+    "tail": "17",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "5",
+    "tail": "18",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "8",
+    "tail": "19",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "9",
+    "tail": "20",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "10",
+    "tail": "21",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "10",
+    "tail": "22",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "30",
+    "tail": "36",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "6",
+    "tail": "15",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "10",
+    "tail": "16",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "33",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "34",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "31",
+    "tail": "35",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "29",
+    "tail": "12",
+    "type": "RETURNS"
+  },
+  {
+    "head": "30",
+    "tail": [
+      "37"
+    ],
+    "type": "RETURNS"
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "head": "57",
+    "tail": "50",
+    "type": "MACRO_ALIAS"
+  },
+  {
+    "head": "58",
+    "tail": "53",
+    "type": "MACRO_ALIAS"
+  },
+  {
+    "head": "1",
+    "tail": "2",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "3",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "4",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "5",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "6",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "7",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "2",
+    "tail": "13",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "2",
+    "tail": "14",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "2",
+    "tail": "8",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "2",
+    "tail": "9",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "2",
+    "tail": "10",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "2",
+    "tail": "11",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "2",
+    "tail": "12",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "10",
+    "tail": "14",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "12",
+    "tail": "9",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "12",
+    "tail": "10",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "57",
+    "tail": "57",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "58",
+    "tail": "56",
+    "type": "ASSIGNED_TO"
+  }
+]

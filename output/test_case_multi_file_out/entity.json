@@ -1,0 +1,330 @@
+[
+  {
+    "id": "1",
+    "name": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c",
+    "type": "FILE"
+  },
+  {
+    "id": "27",
+    "name": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c",
+    "type": "FILE"
+  },
+  {
+    "id": "2",
+    "name": "handler_usb",
+    "type": "FUNCTION",
+    "start_line": 8,
+    "end_line": 8,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "3",
+    "name": "handler_eth",
+    "type": "FUNCTION",
+    "start_line": 9,
+    "end_line": 9,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "4",
+    "name": "get_id",
+    "type": "FUNCTION",
+    "start_line": 22,
+    "end_line": 24,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "5",
+    "name": "get_mode",
+    "type": "FUNCTION",
+    "start_line": 26,
+    "end_line": 28,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "6",
+    "name": "get_const",
+    "type": "FUNCTION",
+    "start_line": 30,
+    "end_line": 33,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "7",
+    "name": "get_buf_size_macro",
+    "type": "FUNCTION",
+    "start_line": 35,
+    "end_line": 37,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "8",
+    "name": "call_init",
+    "type": "FUNCTION",
+    "start_line": 39,
+    "end_line": 41,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "9",
+    "name": "assign_ptrs",
+    "type": "FUNCTION",
+    "start_line": 43,
+    "end_line": 46,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "10",
+    "name": "setup_device",
+    "type": "FUNCTION",
+    "start_line": 48,
+    "end_line": 51,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "28",
+    "name": "external_init",
+    "type": "FUNCTION",
+    "start_line": 9,
+    "end_line": 11,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "29",
+    "name": "get_global",
+    "type": "FUNCTION",
+    "start_line": 13,
+    "end_line": 15,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "30",
+    "name": "get_level",
+    "type": "FUNCTION",
+    "start_line": 17,
+    "end_line": 19,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "31",
+    "name": "call_macros",
+    "type": "FUNCTION",
+    "start_line": 21,
+    "end_line": 25,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "11",
+    "name": "Device",
+    "type": "STRUCT",
+    "scope": "global",
+    "start_line": 11,
+    "end_line": 16,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "32",
+    "name": "Config",
+    "type": "STRUCT",
+    "scope": "global",
+    "start_line": 4,
+    "end_line": 7,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "12",
+    "name": "global_flag",
+    "type": "VARIABLE",
+    "scope": "global",
+    "start_line": 18,
+    "end_line": 18,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "13",
+    "name": "default_config",
+    "type": "VARIABLE",
+    "scope": "global",
+    "start_line": 19,
+    "end_line": 19,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "14",
+    "name": "global_return",
+    "type": "VARIABLE",
+    "scope": "global",
+    "start_line": 20,
+    "end_line": 20,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "15",
+    "name": "temp",
+    "type": "VARIABLE",
+    "scope": "get_const",
+    "start_line": 31,
+    "end_line": 31,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "16",
+    "name": "local_mode",
+    "type": "VARIABLE",
+    "scope": "setup_device",
+    "start_line": 49,
+    "end_line": 49,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "33",
+    "name": "val",
+    "type": "VARIABLE",
+    "scope": "call_macros",
+    "start_line": 22,
+    "end_line": 22,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "34",
+    "name": "buf",
+    "type": "VARIABLE",
+    "scope": "call_macros",
+    "start_line": 23,
+    "end_line": 23,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "35",
+    "name": "conf_ptr",
+    "type": "VARIABLE",
+    "scope": "call_macros",
+    "start_line": 24,
+    "end_line": 24,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "17",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "get_id",
+    "role": "param",
+    "start_line": 22,
+    "end_line": 22,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "18",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "get_mode",
+    "role": "param",
+    "start_line": 26,
+    "end_line": 26,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "19",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "call_init",
+    "role": "param",
+    "start_line": 39,
+    "end_line": 39,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "20",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "assign_ptrs",
+    "role": "param",
+    "start_line": 43,
+    "end_line": 43,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "21",
+    "name": "dev",
+    "type": "VARIABLE",
+    "scope": "setup_device",
+    "role": "param",
+    "start_line": 48,
+    "end_line": 48,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "22",
+    "name": "mode",
+    "type": "VARIABLE",
+    "scope": "setup_device",
+    "role": "param",
+    "start_line": 48,
+    "end_line": 48,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "36",
+    "name": "conf",
+    "type": "VARIABLE",
+    "scope": "get_level",
+    "role": "param",
+    "start_line": 17,
+    "end_line": 17,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "23",
+    "name": "id",
+    "type": "FIELD",
+    "scope": "Device",
+    "start_line": 12,
+    "end_line": 12,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "24",
+    "name": "init",
+    "type": "FIELD",
+    "scope": "Device",
+    "start_line": 13,
+    "end_line": 13,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "25",
+    "name": "config",
+    "type": "FIELD",
+    "scope": "Device",
+    "start_line": 14,
+    "end_line": 14,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "26",
+    "name": "mode",
+    "type": "FIELD",
+    "scope": "Device",
+    "start_line": 15,
+    "end_line": 15,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_1.c"
+  },
+  {
+    "id": "37",
+    "name": "level",
+    "type": "FIELD",
+    "scope": "Config",
+    "start_line": 5,
+    "end_line": 5,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  },
+  {
+    "id": "38",
+    "name": "extra",
+    "type": "FIELD",
+    "scope": "Config",
+    "start_line": 6,
+    "end_line": 6,
+    "source_file": "/data/xuao/code_kg/data/test_case_multi_file/test_2.c"
+  }
+]

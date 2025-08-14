@@ -1,0 +1,127 @@
+[
+  {
+    "head": "6",
+    "tail": "16",
+    "type": "HAS_MEMBER"
+  },
+  {
+    "head": "6",
+    "tail": "17",
+    "type": "HAS_MEMBER"
+  },
+  {
+    "head": "7",
+    "tail": "18",
+    "type": "HAS_MEMBER"
+  },
+  {
+    "head": "5",
+    "tail": "3",
+    "type": "CALLS"
+  },
+  {
+    "head": "5",
+    "tail": "13",
+    "type": "CALLS"
+  },
+  {
+    "head": "1",
+    "tail": "2",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "3",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "4",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "5",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "6",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "7",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "1",
+    "tail": "8",
+    "type": "CONTAINS"
+  },
+  {
+    "head": "3",
+    "tail": "14",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "4",
+    "tail": "15",
+    "type": "HAS_PARAMETER"
+  },
+  {
+    "head": "4",
+    "tail": "9",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "5",
+    "tail": "10",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "5",
+    "tail": "11",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "5",
+    "tail": "12",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "5",
+    "tail": "13",
+    "type": "HAS_VARIABLE"
+  },
+  {
+    "head": "4",
+    "tail": "9",
+    "type": "RETURNS"
+  },
+  {
+    "head": "11",
+    "tail": "6",
+    "type": "TYPE_OF"
+  },
+  {
+    "head": "12",
+    "tail": "7",
+    "type": "TYPE_OF"
+  },
+  {
+    "head": "9",
+    "tail": "15",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "18",
+    "tail": "2",
+    "type": "ASSIGNED_TO"
+  },
+  {
+    "head": "13",
+    "tail": "18",
+    "type": "ASSIGNED_TO"
+  }
+]
