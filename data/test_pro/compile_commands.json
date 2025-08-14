@@ -1,0 +1,28 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-g",
+      "-c",
+      "test_1.c"
+    ],
+    "directory": "/home/lyk/work/test_pro",
+    "file": "/home/lyk/work/test_pro/test_1.c"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-g",
+      "-c",
+      "test_2.c"
+    ],
+    "directory": "/home/lyk/work/test_pro",
+    "file": "/home/lyk/work/test_pro/test_2.c"
+  }
+]

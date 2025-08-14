@@ -1,0 +1,32 @@
+[
+    {
+      "file": "./test_1.c",
+      "location": [36,12,36,20],
+      "name": "BUF_SIZE",
+      "macro": "1024"
+    },
+    {
+        "file": "./test_1.c",
+        "location": [44,17,44,30],
+        "name": "DISPATCH(usb)",
+        "macro": "handler_usb"
+    },
+    {
+        "file": "./test_1.c",
+        "location": [54,12,54,38],
+        "name": "MAX(custom_size, BUF_SIZE)",
+        "macro": "((custom_size) > (1024) ? (custom_size) : (1024))"
+    },
+    {
+        "file": "./test_2.c",
+        "location": [24,32,24,45],
+        "name": "default_alias",
+        "macro": "default_config"
+    },
+    {
+        "file": "./test_2.c",
+        "location": [16,15,16,23],
+        "name": "SCALE(5)",
+        "macro": "((5) * 2)"
+    }
+]
