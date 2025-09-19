@@ -44,10 +44,20 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
             start_line = field.start_point[0] + 1  # 转为从1开始的行号
             end_line = field.end_point[0] + 1
 
+            node_type = None
+            for sub_node in field.children:
+                if sub_node.type == 'primitive_type':
+                    node_type = get_text(sub_node)
+                    break
+                elif sub_node.type == 'sized_type_specifier':
+                    node_type = get_text(sub_node)
+                    break
+
             field_entities.append({
                 "id": field_id,
                 "name": field_name,
                 "type": "FIELD",
+                "style": node_type,
                 "scope": parent_scope,
                 "start_line": start_line,
                 "end_line": end_line

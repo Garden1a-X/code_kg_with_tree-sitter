@@ -30,11 +30,19 @@ def extract_function_entities(root_node, code_bytes, id_counter):
             start_line = node.start_point[0] + 1
             end_line = node.end_point[0] + 1
 
-
+            node_type = None
+            for sub_node in node.children:
+                if sub_node.type == 'primitive_type':
+                    node_type = get_text(sub_node)
+                    break
+                elif sub_node.type == 'sized_type_specifier':
+                    node_type = get_text(sub_node)
+                    break
             entity = {
                 "id": func_id,
                 "name": func_name,
                 "type": "FUNCTION",
+                "style": node_type,
                 "start_line": start_line,
                 "end_line": end_line
             }

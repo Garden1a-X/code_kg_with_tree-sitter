@@ -1,3 +1,23 @@
+def skip_non_variable_start(input_string):
+    if not isinstance(input_string, str):
+        return ""
+
+    without_prefix = ''  
+    for i, char in enumerate(input_string):
+        if char.isalpha() or char == '_':
+            without_prefix = input_string[i:]
+            break
+    new_str = without_prefix.split('(')[0]
+    
+    for i in range(len(new_str)):
+        sin_index = len(new_str) - i - 1
+        sin_char = new_str[sin_index]
+        if sin_char.isalpha() or sin_char == '_':
+            without_suffix = new_str[:(sin_index+1)]
+            return without_suffix
+
+    return ""
+
 def extract_calls_relations(
     root_node,
     code_bytes,
@@ -45,7 +65,8 @@ def extract_calls_relations(
             # ✅ 判断该宏是否被这个 AST 节点完整包裹
             if node_start <= macro_start and macro_end <= node_end:
                 # print("  ✅ 命中该节点范围")
-                return entry["expanded"], entry["original"], entry["range"]
+                if skip_non_variable_start(entry["expanded"]):
+                    return skip_non_variable_start(entry["expanded"]), entry["original"], entry["range"]
 
         # print("  ❌ 未命中任何宏范围")
         return None, None, None
@@ -94,6 +115,8 @@ def extract_calls_relations(
                     resolved_type = "field_func_ptr"
 
                 if resolved_id:
+                    # if expanded:
+                        # print(f"  ✅ 识别宏调用 {caller_id} 调用 → id: {resolved_id}")
                     # print(f"  ✅ 识别为 {resolved_type} 调用 → id: {resolved_id}")
                     relations.append({
                         "head": caller_id,

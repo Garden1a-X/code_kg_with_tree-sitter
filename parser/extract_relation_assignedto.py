@@ -1,3 +1,23 @@
+def skip_non_variable_start(input_string):
+    if not isinstance(input_string, str):
+        return ""
+
+    without_prefix = ''  
+    for i, char in enumerate(input_string):
+        if char.isalpha() or char == '_':
+            without_prefix = input_string[i:]
+            break
+    new_str = without_prefix.split('(')[0]
+    
+    for i in range(len(new_str)):
+        sin_index = len(new_str) - i - 1
+        sin_char = new_str[sin_index]
+        if sin_char.isalpha() or sin_char == '_':
+            without_suffix = new_str[:(sin_index+1)]
+            return without_suffix
+
+    return ""
+
 def extract_assigned_to_relations(
     root_node,
     code_bytes,
@@ -27,7 +47,9 @@ def extract_assigned_to_relations(
 
             if node_start <= macro_start and macro_end <= node_end:
                 # print(f"✅ 命中宏区间：{node_start} ⊇ {macro_start} ~ {macro_end}")
-                return entry["expanded"], entry["original"], entry["range"]
+                if skip_non_variable_start(entry["expanded"]):
+                    return skip_non_variable_start(entry["expanded"]), entry["original"], entry["range"]
+
 
         # print("❌ 未命中任何宏")
         return None, None, None
@@ -36,7 +58,7 @@ def extract_assigned_to_relations(
 
     def resolve_entity_id(node, current_scope):
         if node is None:
-            return None
+            return None, False
 
         expanded, macro_name, macro_range = find_macro_expansion(node)
         if expanded:
@@ -52,14 +74,15 @@ def extract_assigned_to_relations(
                 # print(f"✅ 宏右值命中实体：{expanded} → {entity_id}")
             # else:
                 # print(f"❌ 宏右值未命中任何实体：{expanded}")
-            return entity_id
+
+            return entity_id, True
 
         # 字段赋值
         if node.type in ('field_expression', 'member_expression'):
             field_node = node.child_by_field_name('field')
             field_text = get_text(field_node).strip() if field_node else "<?>"
             # print(f"➡️ 字段访问：{field_text}")
-            return field_id_map.get(field_text)
+            return field_id_map.get(field_text), False
 
         # 普通标识符
         if node.type in ('identifier', 'field_identifier'):
@@ -74,15 +97,15 @@ def extract_assigned_to_relations(
                 # print(f"✅ 标识符解析成功：{name} → {entity_id}")
             # else:
                 # print(f"❌ 标识符未命中：{name}")
-            return entity_id
+            return entity_id, False
 
         # 递归子节点
         for child in node.children:
-            result = resolve_entity_id(child, current_scope)
+            result, flag = resolve_entity_id(child, current_scope)
             if result:
-                return result
+                return result, flag
 
-        return None
+        return None, False
 
     def find_identifier(node):
         if node is None:
@@ -119,30 +142,36 @@ def extract_assigned_to_relations(
                     left = child.child_by_field_name('left')
                     right = child.child_by_field_name('right')
                     if left and right:
-                        lhs_id = resolve_entity_id(left, current_scope)
-                        rhs_id = resolve_entity_id(right, current_scope)
+                        lhs_id, flag = resolve_entity_id(left, current_scope)
+                        rhs_id, flag = resolve_entity_id(right, current_scope)
                         # print(f"\n📌 赋值语句：{get_text(left)} = {get_text(right)}")
                         # print(f"🔍 左值ID: {lhs_id}, 右值ID: {rhs_id}")
                         if lhs_id and rhs_id:
+                            # if flag:
+                                # print(f"🔍 左值ID: {lhs_id}, 右值ID: {rhs_id}")
                             assigned_to_relations.append({
                                 "head": lhs_id,
                                 "tail": rhs_id,
-                                "type": "ASSIGNED_TO"
+                                "type": "ASSIGNED_TO",
+                                "scope": current_scope
                             })
 
         # 声明赋值
         if node.type == 'declaration':
             lhs_node, rhs_node = find_assignment_in_declaration(node)
             if lhs_node and rhs_node:
-                lhs_id = resolve_entity_id(lhs_node, current_scope)
-                rhs_id = resolve_entity_id(rhs_node, current_scope)
+                lhs_id, flag = resolve_entity_id(lhs_node, current_scope)
+                rhs_id, flag = resolve_entity_id(rhs_node, current_scope)
                 # print(f"\n📌 声明赋值：{get_text(lhs_node)} = {get_text(rhs_node)}")
                 # print(f"🔍 左值ID: {lhs_id}, 右值ID: {rhs_id}")
                 if lhs_id and rhs_id:
+                    # if flag:
+                        # print(f"🔍 左值ID: {lhs_id}, 右值ID: {rhs_id}")
                     assigned_to_relations.append({
                         "head": lhs_id,
                         "tail": rhs_id,
-                        "type": "ASSIGNED_TO"
+                        "type": "ASSIGNED_TO",
+                        "scope": current_scope
                     })
 
         for child in node.children:
