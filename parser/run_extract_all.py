@@ -5,6 +5,7 @@ import tracemalloc
 from collections import defaultdict, Counter
 from tqdm import tqdm
 from tree_sitter import Language, Parser
+import tree_sitter_c as tsc
 
 # === 实体提取模块 ===
 from extract_entity_file import extract_file_entity
@@ -22,7 +23,7 @@ from extract_relation_has_parameters import extract_has_parameter_relations
 from extract_relation_has_variables import extract_has_variable_relations
 from extract_relation_returns import extract_returns_relations
 from extract_relation_typeof import extract_typeof_relations
-
+from extract_fail_message import extarct_mes
 # === 包含关系提取模块 ===
 from extract_relation_includes import extract_include_relations, build_transitive_includes, extract_extern_declarations
 
@@ -30,7 +31,7 @@ from extract_relation_includes import extract_include_relations, build_transitiv
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 LANG_SO_PATH = os.path.join(ROOT_DIR, '..', 'build', 'my-languages.so')
 OUTPUT_BASE = os.path.join(ROOT_DIR, '..', 'output')
-MACRO_JSON_PATH = "/data/xuao/code_kg/data/glibc_data/macro.json"
+MACRO_JSON_PATH = "/home/lyk/work/code_kg_with_tree-sitter/data/glibc_data/macro_list.json"
 
 def id_generator(start=1):
     while True:
@@ -38,9 +39,8 @@ def id_generator(start=1):
         start += 1
 
 def get_parser():
-    language = Language(LANG_SO_PATH, 'c')
-    parser = Parser()
-    parser.set_language(language)
+    language = Language(tsc.language())
+    parser = Parser(language)
     return parser
 
 def get_c_files(directory):
@@ -240,6 +240,24 @@ def extract_all(source_dir, output_dir):
     file_to_entities = build_file_to_entities_mapping(all_entities)
     print(f"✅ 文件-实体映射完成，覆盖 {len(file_to_entities)} 个文件")
 
+    # === 提取 报错实体及其关系 ===
+    messages, mes_rela = extarct_mes(parser, c_files, id_counter, file_to_entities)
+    all_entities.extend(messages)
+    all_relations.extend(mes_rela)
+
+    # === 提取 ALIAS 关系 ===
+    for source_path, root, code_bytes in tqdm(file_trees, desc="🔗 阶段 2：提取 ALIAS"):
+        abs_path = os.path.abspath(source_path)
+        contain_list = file_to_entities.get(source_path)
+        if contain_list is None:
+            continue
+        rels = extract_alias_relations(
+            root,
+            code_bytes,
+            contain_list,
+            abs_path
+        )
+        all_relations.extend(rels)
     # === 阶段 2：文件可见性映射和include关系 ===
     print(f"\n" + "="*60)
     print("阶段 2：构建文件可见性映射...")
@@ -375,8 +393,8 @@ def extract_all(source_dir, output_dir):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=str, required=True, help="C 源码目录路径")
-    parser.add_argument("--output", type=str, required=True, help="输出目录路径")
+    parser.add_argument("--source", type=str, default='/home/lyk/work/glibc', help="C 源码目录路径")
+    parser.add_argument("--output", type=str, default='/home/lyk/work/test/code_kg_with_tree-sitter/output', help="输出目录路径")
     args = parser.parse_args()
 
     tracemalloc.start()
