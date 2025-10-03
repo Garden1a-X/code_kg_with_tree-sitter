@@ -45,6 +45,17 @@ def extract_print_template(root, source_path, id_counter, con_dir):
     def get_text(node):
         return code_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
 
+    def find_deep_identifier(node):
+        if node is None:
+            return None
+        if node.type == 'identifier':
+            return node
+        for child in node.children:
+            result = find_deep_identifier(child)
+            if result:
+                return result
+        return None
+
     global temp, entities, relations
     with open(source_path, 'rb') as f:
         code_bytes = f.read()
@@ -134,8 +145,17 @@ def extarct_mes(parser, c_files, id_counter, file2entity):
 
     for source_path in tqdm(c_files, desc="🔍 提取print模板"):
         contain_list = file2entity[source_path]
+        con_dir = {}
+        for value in contain_list:
+            if value.get('type') == 'FUNCTION':
+                con_dir[value['name']] = value['id']
+            elif value.get('type') == 'FILE':
+                con_dir[value['source_file']] = value['id']
 
-        con_dir = {value['name']: value['id'] for value in contain_list if value.type in ['FUNCTION', 'FILE']}
+        abs_source_path = os.path.abspath(source_path)
+        
+        with open(abs_source_path, 'rb') as f:
+            code_bytes = f.read()
         tree = parser.parse(code_bytes)
         root = tree.root_node
         extract_print_template(root, source_path, id_counter, con_dir)

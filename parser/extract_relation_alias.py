@@ -59,15 +59,15 @@ def extract_alias_relations(
     extract_func = None
     for pl in template.keys():
         if pl in abs_path:
-            extract_func = template['pl']
+            extract_func = template.get(pl)
             break
     if not extract_func:
         return []
     
-    con_dir = {con_dir[entity['name']]: entity['id'] for entity in contain_list if entity['type'] == 'FUNCTION'}
+    con_dir = {entity['name']: entity['id'] for entity in contain_list if entity['type'] == 'FUNCTION'}
     for child in root.children:
         child_text = get_text(child)
-        alias_list = extrace_func(child_text)
+        alias_list = extract_func(child_text)
         
         for apair in alias_list:
             kind = apair['type']

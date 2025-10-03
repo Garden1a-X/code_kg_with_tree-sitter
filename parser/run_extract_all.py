@@ -24,6 +24,7 @@ from extract_relation_has_variables import extract_has_variable_relations
 from extract_relation_returns import extract_returns_relations
 from extract_relation_typeof import extract_typeof_relations
 from extract_fail_message import extarct_mes
+from extract_relation_alias import extract_alias_relations
 # === 包含关系提取模块 ===
 from extract_relation_includes import extract_include_relations, build_transitive_includes, extract_extern_declarations
 
