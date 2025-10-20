@@ -44,6 +44,7 @@ def extract_assigned_to_relations(
     """
     基于文件可见性的赋值关系提取
     支持多值映射的变量查找，正确处理同名全局变量消歧
+    新增：支持结构体初始化器中的字段赋值
     """
     def get_text(node):
         return code_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
@@ -101,19 +102,13 @@ def extract_assigned_to_relations(
         return None, False
 
     def resolve_name_with_visibility(name, current_scope, visible_files):
-        """
-        基于可见性解析名称到实体ID，支持多值映射
-        """
-        # 针对特定变量进行详细诊断（仅在DEBUG_MODE时生效）
+        """基于可见性解析名称到实体ID，支持多值映射"""
         is_debug = DEBUG_MODE and name == 'shared_var' and current_scope == 'test_visibility_calls'
         
         if is_debug:
             debug_print(f"\n🔍 [DIAGNOSTIC] 诊断变量访问: {name}")
             debug_print(f"    当前文件: {current_file_path}")
             debug_print(f"    当前作用域: {current_scope}")
-            debug_print(f"    可见文件数: {len(visible_files)}")
-            for vf in list(visible_files)[:5]:
-                debug_print(f"      -> {vf}")
         
         candidates = []
         
@@ -124,40 +119,24 @@ def extract_assigned_to_relations(
             var_ids = var_id_or_list if isinstance(var_id_or_list, list) else [var_id_or_list]
             
             for var_id in var_ids:
-                var_file = entity_file_map.get(var_id, "未映射")
-                if is_debug:
-                    debug_print(f"    找到局部变量 {local_var_key}: id:{var_id} -> {var_file}")
-                    debug_print(f"      文件可见? {var_file in visible_files if var_file else 'N/A'}")
-                
+                var_file = entity_file_map.get(var_id)
                 if var_file and var_file in visible_files:
                     priority = 0
                     candidates.append((var_id, "local_variable", priority, var_file))
-                    if is_debug:
-                        debug_print(f"      ✅ 添加局部变量候选: 优先级:{priority}")
         
-        # 2. 检查全局变量 - 支持多值映射
+        # 2. 检查全局变量
         global_var_key = (name, 'global')
         if global_var_key in variable_id_map:
             var_id_or_list = variable_id_map[global_var_key]
             var_ids = var_id_or_list if isinstance(var_id_or_list, list) else [var_id_or_list]
             
-            if is_debug:
-                debug_print(f"    找到全局变量 {global_var_key}: {len(var_ids)} 个候选")
-            
             for var_id in var_ids:
-                var_file = entity_file_map.get(var_id, "未映射")
-                if is_debug:
-                    debug_print(f"      id:{var_id} -> {var_file}")
-                    debug_print(f"        是当前文件? {var_file == current_file_path}")
-                    debug_print(f"        文件可见? {var_file in visible_files if var_file else 'N/A'}")
-                
+                var_file = entity_file_map.get(var_id)
                 if var_file and var_file in visible_files:
                     priority = 0 if var_file == current_file_path else 10
                     candidates.append((var_id, "global_variable", priority, var_file))
-                    if is_debug:
-                        debug_print(f"        ✅ 添加全局变量候选: 优先级:{priority}")
         
-        # 3. 检查函数（支持多值映射）
+        # 3. 检查函数
         if name in function_id_map:
             func_ids = function_id_map[name]
             if not isinstance(func_ids, list):
@@ -181,33 +160,11 @@ def extract_assigned_to_relations(
                     priority = 0 if field_file == current_file_path else 1
                     candidates.append((field_id, "field", priority, field_file))
         
-        # 调试输出（仅在DEBUG_MODE时生效）
-        if is_debug:
-            debug_print(f"    检查variable_id_map中所有包含'{name}'的条目:")
-            count = 0
-            for (var_name, var_scope), var_id_or_list in variable_id_map.items():
-                if var_name == name:
-                    var_ids = var_id_or_list if isinstance(var_id_or_list, list) else [var_id_or_list]
-                    for var_id in var_ids:
-                        var_file = entity_file_map.get(var_id, "未映射")
-                        debug_print(f"      {(var_name, var_scope)}: id:{var_id} -> {var_file}")
-                        count += 1
-            debug_print(f"      总计找到 {count} 个同名变量")
-            
-            debug_print(f"    总候选数: {len(candidates)}")
-            for i, (cid, ctype, cpri, cfile) in enumerate(candidates):
-                debug_print(f"      候选{i+1}: id:{cid}, 类型:{ctype}, 优先级:{cpri}, 文件:{cfile}")
-        
         if candidates:
-            candidates.sort(key=lambda x: x[2])  # 按优先级排序
-            best_match = candidates[0]
-            if is_debug:
-                debug_print(f"    ⭐ 最终选择: id:{best_match[0]}, 类型:{best_match[1]}, 文件:{best_match[3]}")
-            return best_match[0]
-        else:
-            if is_debug:
-                debug_print(f"    ❌ 没有找到候选")
-            return None
+            candidates.sort(key=lambda x: x[2])
+            return candidates[0][0]
+        
+        return None
 
     def resolve_field_with_visibility(field_name, visible_files):
         """解析字段访问"""
@@ -248,11 +205,79 @@ def extract_assigned_to_relations(
     assigned_to_relations = []
 
     def traverse(node, current_scope='global'):
+        # 进入函数定义
         if node.type == 'function_definition':
             declarator = node.child_by_field_name('declarator')
             func_node = find_identifier(declarator)
             if func_node:
                 current_scope = get_text(func_node).strip()
+
+        # 辅助函数：处理初始化器列表
+        def handle_initializer_list(init_list_node, parent_struct_name, context_var_id=None, context_var_name=None):
+            """处理 { .field = value, ... } 形式的初始化器"""
+            if not init_list_node or init_list_node.type != 'initializer_list':
+                return
+            
+            for child in init_list_node.children:
+                if child.type == 'initializer_pair':
+                    field_name = None
+                    value_node = None
+                    
+                    # 提取字段名和值
+                    for subchild in child.children:
+                        if subchild.type == 'field_designator':
+                            for gchild in subchild.children:
+                                if gchild.type in ('identifier', 'field_identifier'):
+                                    field_name = get_text(gchild).strip()
+                                    break
+                        elif subchild.type not in (',', '=', '.', '{', '}'):
+                            if not value_node:
+                                value_node = subchild
+                    
+                    if not value_node:
+                        value_node = child.child_by_field_name('value')
+                    
+                    if field_name and value_node:
+                        # 查找字段 ID
+                        candidate_ids = field_id_map.get(field_name, [])
+                        if not isinstance(candidate_ids, list):
+                            candidate_ids = [candidate_ids]
+                        
+                        field_id = None
+                        visible_files = file_visibility.get(current_file_path, {current_file_path})
+                        
+                        for fid in candidate_ids:
+                            fid_file = entity_file_map.get(fid)
+                            if fid_file == current_file_path:
+                                field_id = fid
+                                break
+                        
+                        if not field_id and candidate_ids:
+                            for fid in candidate_ids:
+                                fid_file = entity_file_map.get(fid)
+                                if fid_file in visible_files:
+                                    field_id = fid
+                                    break
+                        
+                        if field_id:
+                            rhs_id, _ = resolve_entity_with_visibility(value_node, current_scope)
+                            
+                            if rhs_id:
+                                relation = {
+                                    "head": field_id,
+                                    "tail": rhs_id,
+                                    "type": "ASSIGNED_TO",
+                                    "scope": parent_struct_name,
+                                    "visibility_checked": True
+                                }
+                                
+                                if context_var_id:
+                                    relation["context_var_id"] = context_var_id
+                                if context_var_name:
+                                    relation["context_var_name"] = context_var_name
+                                
+                                if relation not in assigned_to_relations:
+                                    assigned_to_relations.append(relation)
 
         # 表达式赋值
         if node.type == 'expression_statement':
@@ -273,7 +298,6 @@ def extract_assigned_to_relations(
                                 "visibility_checked": True
                             }
                             
-                            # 避免重复添加
                             if relation not in assigned_to_relations:
                                 assigned_to_relations.append(relation)
 
@@ -293,10 +317,51 @@ def extract_assigned_to_relations(
                         "visibility_checked": True
                     }
                     
-                    # 避免重复添加
                     if relation not in assigned_to_relations:
                         assigned_to_relations.append(relation)
 
+        # 处理结构体初始化器
+        if node.type == 'init_declarator':
+            declarator = node.child_by_field_name('declarator')
+            value = node.child_by_field_name('value')
+            
+            if declarator and value and value.type == 'initializer_list':
+                var_name_node = find_identifier(declarator)
+                if var_name_node:
+                    var_name = get_text(var_name_node).strip()
+                    
+                    # 获取变量 ID
+                    var_key = (var_name, current_scope)
+                    if var_key not in variable_id_map:
+                        var_key = (var_name, 'global')
+                    
+                    var_id = variable_id_map.get(var_key)
+                    if isinstance(var_id, list):
+                        var_id = var_id[0] if var_id else None
+                    
+                    # 从父节点获取类型
+                    parent = node.parent
+                    if parent and parent.type == 'declaration':
+                        type_node = parent.child_by_field_name('type')
+                        if type_node:
+                            type_text = get_text(type_node).strip()
+                            
+                            # 提取结构体名
+                            struct_name = None
+                            if 'struct ' in type_text:
+                                type_text = type_text.replace('const ', '').replace('static ', '').strip()
+                                if type_text.startswith('struct '):
+                                    struct_name = type_text[len('struct '):].strip()
+                            
+                            if struct_name and var_id:
+                                handle_initializer_list(
+                                    init_list_node=value,
+                                    parent_struct_name=struct_name,
+                                    context_var_id=var_id,
+                                    context_var_name=var_name
+                                )
+
+        # 递归遍历
         for child in node.children:
             traverse(child, current_scope)
 
