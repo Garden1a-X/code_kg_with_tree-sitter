@@ -107,12 +107,18 @@ def build_file_to_entities_mapping(all_entities):
     return file_to_entities
 
 def deduplicate_relations(relations):
-    """去重关系列表"""
+    """去重关系列表 - 考虑上下文信息"""
     seen = set()
     unique_relations = []
     
     for rel in relations:
+        # 基础关系键
         rel_key = (rel['head'], rel['tail'], rel['type'])
+        
+        # 🆕 如果有上下文信息，加入到键中
+        if 'context_var_id' in rel:
+            rel_key = rel_key + (rel['context_var_id'],)
+        
         if rel_key not in seen:
             seen.add(rel_key)
             unique_relations.append(rel)
