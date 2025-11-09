@@ -11,7 +11,7 @@ host->detect 在 mmc_alloc_host 里挂接为 mmc_rescan
 mmc_rescan -> mmc_rescan_try_freq -> mmc_attach_mmc -> mmc_init_card
 -> mmc_hs200_tuning -> mmc_execute_tuning
 mmc_execute_tuning 执行 host->ops->execute_tuning(host, opcode)
-execute_tuning 在 dw_mci_ops 里挂接为 dw_mci_execute_tuning
+execute_tuning 在 mmc_host_ops 结构体中挂接为 dw_mci_execute_tuning
 -> dw_mci_execute_tuning -> dw_mci_hi3660_execute_tuning
 """
 
@@ -57,12 +57,12 @@ ASSIGNMENT_CHAINS = [
         "target_function": "mmc_rescan",
         "context_function": "mmc_alloc_host"
     },
-    # host->ops->execute_tuning 挂接为 dw_mci_execute_tuning (在 dw_mci_ops 中)
+    # host->ops->execute_tuning 挂接为 dw_mci_execute_tuning (在 mmc_host_ops 结构体中)
     {
         "description": "host->ops->execute_tuning 挂接为 dw_mci_execute_tuning",
         "field": "execute_tuning",
         "target_function": "dw_mci_execute_tuning",
-        "struct": "dw_mci_ops"
+        "struct": "mmc_host_ops"  # 结构体类型，不是变量名
     },
 ]
 
@@ -89,7 +89,7 @@ ALL_FUNCTIONS = [
 
 # 重要的字段和结构体
 IMPORTANT_FIELDS = ["detect", "execute_tuning"]
-IMPORTANT_STRUCTS = ["dw_mci_ops"]
+IMPORTANT_STRUCTS = ["mmc_host_ops"]  # dw_mci_ops 是变量不是结构体，应该检查 mmc_host_ops
 
 
 def load_json(filepath):
