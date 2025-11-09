@@ -64,6 +64,12 @@ ASSIGNMENT_CHAINS = [
         "target_function": "dw_mci_execute_tuning",
         "struct": "mmc_host_ops"  # 结构体类型，不是变量名
     },
+    # drv_data->execute_tuning 挂接为 dw_mci_hi3660_execute_tuning (在某个 dw_mci 特定 ops 中)
+    {
+        "description": "drv_data->execute_tuning 挂接为 dw_mci_hi3660_execute_tuning",
+        "field": "execute_tuning",
+        "target_function": "dw_mci_hi3660_execute_tuning",
+    },
 ]
 
 # 所有需要检查的函数
