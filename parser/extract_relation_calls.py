@@ -226,14 +226,18 @@ def extract_calls_relations(
                 resolved_id, resolved_type = resolve_callee_with_visibility(callee_name, current_function)
 
                 if resolved_id:
+                    # 获取调用发生的行号
+                    call_line = node.start_point[0] + 1  # +1 因为行号从1开始
+
                     relation = {
                         "head": caller_id,
                         "tail": resolved_id,
                         "type": "CALLS",
+                        "call_line": call_line,  # 新增：记录调用发生的行号
                         "resolution_type": resolved_type,
                         "visibility_checked": True
                     }
-                    
+
                     # 避免重复添加
                     if relation not in relations:
                         relations.append(relation)
