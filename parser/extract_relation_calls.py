@@ -101,24 +101,41 @@ def extract_calls_relations(
     def resolve_callee_with_visibility(callee_name, current_function):
         """
         优化版本：减少重复计算，提高查找效率
+
+        优化策略：
+        - 如果只有1个候选（唯一匹配），直接建立关系，跳过可见性检查
+        - 如果有多个候选，使用可见性筛选解决歧义
         """
-        
+
         candidates = []
-        
+        all_candidates = []  # 记录所有候选（不考虑可见性）
+
         # 1. 查找函数定义 - 优化的多值映射处理
         func_ids = function_id_map.get(callee_name, [])
         if not isinstance(func_ids, list):
             func_ids = [func_ids] if func_ids else []
-        
+
+        # 🎯 优化：如果只有1个函数候选，直接返回（跳过可见性检查）
+        if len(func_ids) == 1:
+            func_id = func_ids[0]
+            func_file = entity_file_map.get(func_id)
+            if func_file:
+                # 唯一候选，直接返回
+                return func_id, "function_unique"
+
+        # 有多个候选时，使用可见性筛选
         for func_id in func_ids:
             func_file = entity_file_map.get(func_id)
-            if func_file and func_file in current_visible_files:
-                # 优先级计算：当前文件(0) > 其他文件(10) + 声明惩罚(100)
-                base_priority = 0 if func_file == current_file_path else 10
-                decl_penalty = 100 if is_function_declaration_fast(func_id) else 0
-                final_priority = base_priority + decl_penalty
-                
-                candidates.append((func_id, "function", final_priority, func_file))
+            if func_file:
+                all_candidates.append((func_id, "function", func_file))
+
+                if func_file in current_visible_files:
+                    # 优先级计算：当前文件(0) > 其他文件(10) + 声明惩罚(100)
+                    base_priority = 0 if func_file == current_file_path else 10
+                    decl_penalty = 100 if is_function_declaration_fast(func_id) else 0
+                    final_priority = base_priority + decl_penalty
+
+                    candidates.append((func_id, "function", final_priority, func_file))
         
         # 2. 检查 extern 函数声明 - 优化查找
         if callee_name in extern_functions_set:
