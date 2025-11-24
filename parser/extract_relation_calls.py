@@ -76,6 +76,30 @@ def extract_calls_relations(
                 return result
         return None
 
+    def extract_field_path(node):
+        """
+        提取字段访问路径
+        例如: host->ops->execute_tuning -> ["host", "ops", "execute_tuning"]
+        """
+        if node is None:
+            return []
+
+        if node.type == "identifier":
+            return [get_text(node)]
+
+        if node.type == "field_expression":
+            # field_expression 有两个部分: argument (对象) 和 field (字段名)
+            argument = node.child_by_field_name("argument")
+            field = node.child_by_field_name("field")
+
+            if argument and field:
+                # 递归提取前面的路径
+                prefix_path = extract_field_path(argument)
+                field_name = get_text(field)
+                return prefix_path + [field_name]
+
+        return []
+
     def find_macro_expansion(node):
         if not macro_lookup_map or not file_path:
             return None, None, None
@@ -207,12 +231,12 @@ def extract_calls_relations(
         # 检查调用表达式
         if node.type == "call_expression" and current_function:
             callee_node = node.child_by_field_name("function")
-            
+
             # 获取调用者ID - 优化的多值映射处理
             caller_ids = function_id_map.get(current_function, [])
             if not isinstance(caller_ids, list):
                 caller_ids = [caller_ids] if caller_ids else []
-            
+
             # 选择当前文件中的函数作为调用者
             caller_id = None
             for cid in caller_ids:
@@ -220,44 +244,80 @@ def extract_calls_relations(
                 if caller_file == current_file_path:
                     caller_id = cid
                     break
-            
+
             if not caller_id and caller_ids:
                 caller_id = caller_ids[0]
-                
+
             if not caller_id:
                 return
 
-            callee_name = None
+            # 获取调用发生的行号
+            call_line = node.start_point[0] + 1  # +1 因为行号从1开始
 
-            # 优先尝试匹配宏展开
-            expanded, original_macro, macro_range = find_macro_expansion(node)
+            # 判断是直接调用还是间接调用
+            is_indirect_call = callee_node and callee_node.type == "field_expression"
 
-            if expanded:
-                callee_name = expanded
+            if is_indirect_call:
+                # === 间接调用：通过字段（函数指针）调用 ===
+                field_path = extract_field_path(callee_node)
+
+                if field_path and len(field_path) > 0:
+                    # 最后一个元素是字段名
+                    field_name = field_path[-1]
+
+                    # 查找所有同名的 FIELD 实体
+                    field_ids = field_id_map.get(field_name, [])
+                    if not isinstance(field_ids, list):
+                        field_ids = [field_ids] if field_ids else []
+
+                    # 为每个同名字段建立 CALLS 关系
+                    for field_id in field_ids:
+                        relation = {
+                            "head": caller_id,
+                            "tail": field_id,
+                            "type": "CALLS",
+                            "call_line": call_line,
+                            "call_type": "indirect",  # 标记为间接调用
+                            "target_type": "FIELD",   # tail 指向 FIELD
+                            "field_path": field_path,  # 完整字段路径
+                            "field_pattern": get_text(callee_node)  # 原始代码片段
+                        }
+
+                        # 避免重复添加
+                        if relation not in relations:
+                            relations.append(relation)
             else:
-                id_node = find_identifier(callee_node)
-                if id_node:
-                    callee_name = get_text(id_node)
+                # === 直接调用：普通函数调用 ===
+                callee_name = None
 
-            if callee_name:
-                resolved_id, resolved_type = resolve_callee_with_visibility(callee_name, current_function)
+                # 优先尝试匹配宏展开
+                expanded, original_macro, macro_range = find_macro_expansion(node)
 
-                if resolved_id:
-                    # 获取调用发生的行号
-                    call_line = node.start_point[0] + 1  # +1 因为行号从1开始
+                if expanded:
+                    callee_name = expanded
+                else:
+                    id_node = find_identifier(callee_node)
+                    if id_node:
+                        callee_name = get_text(id_node)
 
-                    relation = {
-                        "head": caller_id,
-                        "tail": resolved_id,
-                        "type": "CALLS",
-                        "call_line": call_line,  # 新增：记录调用发生的行号
-                        "resolution_type": resolved_type,
-                        "visibility_checked": True
-                    }
+                if callee_name:
+                    resolved_id, resolved_type = resolve_callee_with_visibility(callee_name, current_function)
 
-                    # 避免重复添加
-                    if relation not in relations:
-                        relations.append(relation)
+                    if resolved_id:
+                        relation = {
+                            "head": caller_id,
+                            "tail": resolved_id,
+                            "type": "CALLS",
+                            "call_line": call_line,
+                            "call_type": "direct",    # 标记为直接调用
+                            "target_type": "FUNCTION", # tail 指向 FUNCTION
+                            "resolution_type": resolved_type,
+                            "visibility_checked": True
+                        }
+
+                        # 避免重复添加
+                        if relation not in relations:
+                            relations.append(relation)
 
         for child in node.children:
             traverse(child, current_function)

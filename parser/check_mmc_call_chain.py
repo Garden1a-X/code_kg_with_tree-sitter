@@ -176,8 +176,11 @@ def check_entity_exists(name, entity_map, entity_type="FUNCTION"):
         return False, []
 
 
-def check_call_relation(caller_name, callee_name, function_map, calls_map, id_to_entity):
-    """检查函数调用关系是否存在"""
+def check_call_relation(caller_name, callee_name, function_map, calls_map, id_to_entity, assigned_map=None):
+    """
+    检查函数调用关系是否存在
+    支持直接调用和间接调用（通过函数指针）
+    """
     caller_entities = function_map.get(caller_name, [])
     callee_entities = function_map.get(callee_name, [])
 
@@ -189,39 +192,87 @@ def check_call_relation(caller_name, callee_name, function_map, calls_map, id_to
         print(f"  ❌ 被调用者 '{callee_name}' 不存在")
         return False
 
-    # 检查是否存在任意一对调用关系
-    found = False
+    # 检查是否存在直接调用关系 (FUNCTION -> FUNCTION)
+    found_direct = False
     for caller in caller_entities:
         for callee in callee_entities:
             key = (caller['id'], callee['id'])
             if key in calls_map:
-                found = True
                 rels = calls_map[key]
-                caller_file = caller.get('source_file', '')
-                callee_file = callee.get('source_file', '')
+                # 检查是否为直接调用
+                for rel in rels:
+                    if rel.get('call_type') == 'direct' or rel.get('target_type') == 'FUNCTION':
+                        found_direct = True
+                        caller_file = caller.get('source_file', '')
+                        callee_file = callee.get('source_file', '')
 
-                if 'drivers/mmc' in caller_file:
-                    caller_short = caller_file.split('drivers/mmc/')[-1]
-                else:
-                    caller_short = os.path.basename(caller_file)
+                        if 'drivers/mmc' in caller_file:
+                            caller_short = caller_file.split('drivers/mmc/')[-1]
+                        else:
+                            caller_short = os.path.basename(caller_file)
 
-                if 'drivers/mmc' in callee_file:
-                    callee_short = callee_file.split('drivers/mmc/')[-1]
-                else:
-                    callee_short = os.path.basename(callee_file)
+                        if 'drivers/mmc' in callee_file:
+                            callee_short = callee_file.split('drivers/mmc/')[-1]
+                        else:
+                            callee_short = os.path.basename(callee_file)
 
-                print(f"  ✅ CALLS 关系存在: {caller_name} -> {callee_name}")
-                print(f"     调用者: {caller_short}")
-                print(f"     被调用: {callee_short}")
-                print(f"     关系数: {len(rels)}")
-                return True
+                        print(f"  ✅ CALLS 关系存在: {caller_name} -> {callee_name}")
+                        print(f"     调用者: {caller_short}")
+                        print(f"     被调用: {callee_short}")
+                        print(f"     关系数: {len([r for r in rels if r.get('call_type') == 'direct'])}")
+                        return True
 
-    if not found:
-        print(f"  ❌ CALLS 关系不存在: {caller_name} -> {callee_name}")
-        print(f"     调用者实体数: {len(caller_entities)}")
-        print(f"     被调用实体数: {callee_entities}")
+    # 检查是否存在间接调用关系 (FUNCTION -> FIELD -> FUNCTION)
+    if assigned_map:
+        found_indirect = False
+        for caller in caller_entities:
+            # 查找所有从该函数出发的 CALLS 关系
+            for (head, tail), rels in calls_map.items():
+                if head == caller['id']:
+                    for rel in rels:
+                        # 检查是否为间接调用
+                        if rel.get('call_type') == 'indirect' and rel.get('target_type') == 'FIELD':
+                            field_id = tail
+                            field_entity = id_to_entity.get(field_id)
 
-    return found
+                            # 查找该字段的 ASSIGNED_TO 关系
+                            for (assign_head, assign_tail), assign_rels in assigned_map.items():
+                                if assign_head == field_id:
+                                    # 检查 assign_tail 是否是我们要找的 callee
+                                    for callee in callee_entities:
+                                        if assign_tail == callee['id']:
+                                            found_indirect = True
+                                            caller_file = caller.get('source_file', '')
+                                            callee_file = callee.get('source_file', '')
+
+                                            if 'drivers/mmc' in caller_file:
+                                                caller_short = caller_file.split('drivers/mmc/')[-1]
+                                            else:
+                                                caller_short = os.path.basename(caller_file)
+
+                                            if 'drivers/mmc' in callee_file:
+                                                callee_short = callee_file.split('drivers/mmc/')[-1]
+                                            else:
+                                                callee_short = os.path.basename(callee_file)
+
+                                            field_name = field_entity.get('name', 'unknown') if field_entity else 'unknown'
+                                            field_pattern = rel.get('field_pattern', '')
+
+                                            print(f"  ✅ CALLS 关系存在 (间接调用): {caller_name} -> {callee_name}")
+                                            print(f"     调用者: {caller_short}")
+                                            print(f"     被调用: {callee_short}")
+                                            print(f"     调用方式: 函数指针 ({field_pattern})")
+                                            print(f"     字段名: {field_name}")
+                                            return True
+
+        if found_indirect:
+            return True
+
+    print(f"  ❌ CALLS 关系不存在: {caller_name} -> {callee_name}")
+    print(f"     调用者实体数: {len(caller_entities)}")
+    print(f"     被调用实体数: {callee_entities}")
+
+    return False
 
 
 def check_assignment_relation(assign_info, function_map, field_map, assigned_map, id_to_entity):
@@ -324,7 +375,7 @@ def main():
     missing_calls = []
     for caller, callee in CALL_CHAINS:
         print(f"\n🔗 检查: {caller} -> {callee}")
-        exists = check_call_relation(caller, callee, function_map, calls_map, id_to_entity)
+        exists = check_call_relation(caller, callee, function_map, calls_map, id_to_entity, assigned_map)
         if not exists:
             missing_calls.append((caller, callee))
 
