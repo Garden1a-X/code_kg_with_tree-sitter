@@ -238,9 +238,18 @@ def extract_assigned_to_relations(
             # 查找 typedef 映射
             if typedef_name in typedef_map:
                 original_name = typedef_map[typedef_name]
-                # 递归解析多级 typedef
-                while original_name in typedef_map:
+                # 递归解析多级 typedef（防止循环引用）
+                visited = {typedef_name}
+                max_depth = 10  # 防止过深的 typedef 链
+                depth = 0
+                while original_name in typedef_map and depth < max_depth:
+                    if original_name in visited:
+                        # 检测到循环引用，停止解析
+                        debug_print(f"⚠️ Typedef 循环引用检测: {original_name}")
+                        break
+                    visited.add(original_name)
                     original_name = typedef_map[original_name]
+                    depth += 1
                 return original_name
             # 如果没有映射，可能是匿名 struct typedef
             return typedef_name
@@ -336,21 +345,31 @@ def extract_assigned_to_relations(
                     # 这是一个直接的值节点（不是 initializer_pair）
                     value_node = child
 
+                    debug_print(f"🔍 位置初始化: index={positional_index}, child.type={child.type}")
+
                     # 处理嵌套的 initializer_list（如嵌套结构体）
                     if child.type == 'initializer_list':
                         # 需要知道对应字段的类型来递归处理
                         # 这里简单跳过，主要处理简单值
+                        debug_print(f"⏭️ 跳过嵌套 initializer_list")
                         positional_index += 1
                         continue
 
                     # 使用位置索引获取对应的字段
                     if positional_index < len(ordered_fields):
                         field_id, field_name = ordered_fields[positional_index]
+                        debug_print(f"📌 匹配字段: {field_name} (index {positional_index})")
 
                         # 解析赋值的右侧值
-                        rhs_id, _ = resolve_entity_with_visibility(value_node, current_scope)
+                        try:
+                            rhs_id, _ = resolve_entity_with_visibility(value_node, current_scope)
+                        except Exception as e:
+                            debug_print(f"❌ 解析实体失败: {e}")
+                            positional_index += 1
+                            continue
 
                         if rhs_id:
+                            debug_print(f"✅ 创建关系: {field_name} -> {rhs_id}")
                             relation = {
                                 "head": field_id,
                                 "tail": rhs_id,
@@ -367,8 +386,13 @@ def extract_assigned_to_relations(
 
                             if relation not in assigned_to_relations:
                                 assigned_to_relations.append(relation)
+                        else:
+                            debug_print(f"⚠️ 未找到右值实体")
 
                         positional_index += 1
+                    else:
+                        debug_print(f"⚠️ 索引超出字段范围: {positional_index} >= {len(ordered_fields)}")
+                        break  # 超出字段范围，停止处理
 
         # 表达式赋值
         if node.type == 'expression_statement':
