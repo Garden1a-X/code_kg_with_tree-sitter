@@ -18,8 +18,10 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
 
     field_entities = []
     field_id_map = {}
+    struct_fields_ordered = {}  # struct_name -> [(field_id, field_name), ...]
 
     def traverse_field_list(field_list_node, parent_scope):
+        field_index = 0  # Track field declaration order
         for field in field_list_node.children:
             if field.type != 'field_declaration':
                 continue
@@ -44,15 +46,33 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
             start_line = field.start_point[0] + 1  # 转为从1开始的行号
             end_line = field.end_point[0] + 1
 
+            node_type = None
+            for sub_node in field.children:
+                if sub_node.type == 'primitive_type':
+                    node_type = get_text(sub_node)
+                    break
+                elif sub_node.type == 'sized_type_specifier':
+                    node_type = get_text(sub_node)
+                    break
+
             field_entities.append({
                 "id": field_id,
                 "name": field_name,
                 "type": "FIELD",
+                "style": node_type,
                 "scope": parent_scope,
                 "start_line": start_line,
-                "end_line": end_line
+                "end_line": end_line,
+                "field_index": field_index  # Add field order
             })
             field_id_map.setdefault(field_name, []).append(field_id)
+
+            # Track ordered fields for positional initialization
+            if parent_scope not in struct_fields_ordered:
+                struct_fields_ordered[parent_scope] = []
+            struct_fields_ordered[parent_scope].append((field_id, field_name))
+
+            field_index += 1
 
     def traverse(node, current_scope="global"):
         if node.type == 'function_definition':
@@ -85,4 +105,4 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
             traverse(child, current_scope)
 
     traverse(root_node)
-    return field_entities, field_id_map
+    return field_entities, field_id_map, struct_fields_ordered
