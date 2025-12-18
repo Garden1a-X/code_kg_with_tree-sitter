@@ -482,14 +482,29 @@ def extract_assigned_to_relations(
                         struct_name = infer_struct_type(parent)
 
                         if struct_name and var_id:
-                            # 检查是否是数组初始化
-                            # 如果 initializer_list 的子节点都是 initializer_list，说明是数组
-                            child_initializers = [
+                            # 检查是否是数组初始化 vs 嵌套结构体初始化
+                            # 数组：所有值节点都是 initializer_list，如 {{...}, {...}}
+                            # 嵌套结构体：混合了 initializer_list 和其他值，如 {{...}, value}
+
+                            # 收集所有非分隔符的子节点
+                            value_nodes = [
                                 child for child in value.children
+                                if child.type not in (',', '{', '}', 'comment')
+                            ]
+
+                            # 收集其中的 initializer_list 节点
+                            child_initializers = [
+                                child for child in value_nodes
                                 if child.type == 'initializer_list'
                             ]
 
-                            if child_initializers:
+                            # 判断：只有当所有值都是 initializer_list 且数量>1 时，才是数组
+                            is_array = (
+                                len(child_initializers) > 1 and
+                                len(child_initializers) == len(value_nodes)
+                            )
+
+                            if is_array:
                                 # 数组初始化：遍历每个数组元素
                                 debug_print(f"📦 数组初始化: {var_name}[{len(child_initializers)}]")
                                 for idx, element_init in enumerate(child_initializers):
@@ -501,7 +516,8 @@ def extract_assigned_to_relations(
                                         context_var_name=f"{var_name}[{idx}]"
                                     )
                             else:
-                                # 普通结构体初始化
+                                # 普通结构体初始化（包括嵌套结构体）
+                                debug_print(f"🏗️ 结构体初始化: {var_name}")
                                 handle_initializer_list(
                                     init_list_node=value,
                                     parent_struct_name=struct_name,
