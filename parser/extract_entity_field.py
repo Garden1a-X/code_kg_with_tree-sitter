@@ -46,7 +46,9 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
             start_line = field.start_point[0] + 1  # 转为从1开始的行号
             end_line = field.end_point[0] + 1
 
+            # 提取字段类型信息（包括结构体类型）
             node_type = None
+            struct_type_name = None  # 用于记录结构体类型名
             for sub_node in field.children:
                 if sub_node.type == 'primitive_type':
                     node_type = get_text(sub_node)
@@ -54,6 +56,15 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
                 elif sub_node.type == 'sized_type_specifier':
                     node_type = get_text(sub_node)
                     break
+                elif sub_node.type in ('struct_specifier', 'union_specifier'):
+                    # 结构体或联合体类型字段
+                    struct_name_node = sub_node.child_by_field_name('name')
+                    if struct_name_node:
+                        struct_type_name = get_text(struct_name_node).strip()
+                        node_type = f"struct {struct_type_name}"
+                elif sub_node.type == 'type_identifier':
+                    # typedef 类型（可能是 typedef 的结构体）
+                    node_type = get_text(sub_node).strip()
 
             field_entities.append({
                 "id": field_id,
@@ -63,14 +74,15 @@ def extract_field_entities(root_node, code_bytes, id_counter, struct_id_map):
                 "scope": parent_scope,
                 "start_line": start_line,
                 "end_line": end_line,
-                "field_index": field_index  # Add field order
+                "field_index": field_index,  # Add field order
+                "struct_type": struct_type_name  # 记录结构体类型名（如果是结构体字段）
             })
             field_id_map.setdefault(field_name, []).append(field_id)
 
             # Track ordered fields for positional initialization
             if parent_scope not in struct_fields_ordered:
                 struct_fields_ordered[parent_scope] = []
-            struct_fields_ordered[parent_scope].append((field_id, field_name))
+            struct_fields_ordered[parent_scope].append((field_id, field_name, struct_type_name))
 
             field_index += 1
 

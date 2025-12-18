@@ -347,17 +347,39 @@ def extract_assigned_to_relations(
 
                     debug_print(f"🔍 位置初始化: index={positional_index}, child.type={child.type}")
 
-                    # 处理嵌套的 initializer_list（如嵌套结构体）
+                    # 处理嵌套的 initializer_list（如嵌套结构体或数组元素）
                     if child.type == 'initializer_list':
-                        # 需要知道对应字段的类型来递归处理
-                        # 这里简单跳过，主要处理简单值
-                        debug_print(f"⏭️ 跳过嵌套 initializer_list")
+                        if positional_index < len(ordered_fields):
+                            # 获取当前位置对应字段的类型信息
+                            if len(ordered_fields[positional_index]) >= 3:
+                                field_id, field_name, nested_struct_type = ordered_fields[positional_index]
+                            else:
+                                # 兼容旧格式（只有 field_id 和 field_name）
+                                field_id, field_name = ordered_fields[positional_index]
+                                nested_struct_type = None
+
+                            if nested_struct_type:
+                                # 这是嵌套结构体字段，递归处理
+                                debug_print(f"🔄 递归处理嵌套结构体: {field_name} -> {nested_struct_type}")
+                                handle_initializer_list(
+                                    child,
+                                    nested_struct_type,
+                                    context_var_id,
+                                    context_var_name
+                                )
+                            else:
+                                debug_print(f"⏭️ 跳过未知类型的嵌套 initializer_list")
+
                         positional_index += 1
                         continue
 
                     # 使用位置索引获取对应的字段
                     if positional_index < len(ordered_fields):
-                        field_id, field_name = ordered_fields[positional_index]
+                        # 兼容新旧格式
+                        if len(ordered_fields[positional_index]) >= 3:
+                            field_id, field_name, _ = ordered_fields[positional_index]
+                        else:
+                            field_id, field_name = ordered_fields[positional_index]
                         debug_print(f"📌 匹配字段: {field_name} (index {positional_index})")
 
                         # 解析赋值的右侧值
@@ -460,12 +482,32 @@ def extract_assigned_to_relations(
                         struct_name = infer_struct_type(parent)
 
                         if struct_name and var_id:
-                            handle_initializer_list(
-                                init_list_node=value,
-                                parent_struct_name=struct_name,
-                                context_var_id=var_id,
-                                context_var_name=var_name
-                            )
+                            # 检查是否是数组初始化
+                            # 如果 initializer_list 的子节点都是 initializer_list，说明是数组
+                            child_initializers = [
+                                child for child in value.children
+                                if child.type == 'initializer_list'
+                            ]
+
+                            if child_initializers:
+                                # 数组初始化：遍历每个数组元素
+                                debug_print(f"📦 数组初始化: {var_name}[{len(child_initializers)}]")
+                                for idx, element_init in enumerate(child_initializers):
+                                    debug_print(f"  处理数组元素 [{idx}]")
+                                    handle_initializer_list(
+                                        init_list_node=element_init,
+                                        parent_struct_name=struct_name,
+                                        context_var_id=var_id,
+                                        context_var_name=f"{var_name}[{idx}]"
+                                    )
+                            else:
+                                # 普通结构体初始化
+                                handle_initializer_list(
+                                    init_list_node=value,
+                                    parent_struct_name=struct_name,
+                                    context_var_id=var_id,
+                                    context_var_name=var_name
+                                )
 
         # 递归遍历
         for child in node.children:
