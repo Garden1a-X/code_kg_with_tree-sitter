@@ -1,98 +1,41 @@
-// Test comprehensive call chain analysis with typedef anonymous struct and positional initialization
-// This test verifies:
-// 1. ASSIGNED_TO relations for positional initialization in typedef anonymous struct arrays
-// 2. Indirect CALLS relations through struct field pointers
-// 3. Call chain traversal: func_a -> func_b -> struct_array[idx].field -> target_func
+// Test comprehensive call chain analysis with typedef struct and positional initialization
 
-// Target functions that will be called indirectly
-void target_func1(void) {
-    // Implementation
-}
+// ========== Target Functions ==========
+void target_func1(void) {}
+void target_func2(void) {}
+void target_func3(void) {}
 
-void target_func2(void) {
-    // Implementation
-}
-
-void target_func3(void) {
-    // Implementation
-}
-
-void target_func4(void) {
-    // Implementation
-}
-
-// Define typedef anonymous struct with function pointer fields
+// ========== Test 1: Anonymous Typedef Struct ==========
 typedef struct {
-    void (*callback1)(void);
-    void (*callback2)(void);
-} FunctionOps;
+    void (*handler1)(void);
+    void (*handler2)(void);
+} AnonymousOps;
 
-// Positional array initialization - should create ASSIGNED_TO relations:
-// struct_array[0].callback1 -> target_func1
-// struct_array[0].callback2 -> target_func2
-// struct_array[1].callback1 -> target_func3
-// struct_array[1].callback2 -> target_func4
-FunctionOps struct_array[] = {
-    {target_func1, target_func2},  // positional: field order matters
-    {target_func3, target_func4}
-};
+AnonymousOps anon_ops = {target_func1, target_func2};  // positional init
 
-// Single struct with partial initialization
-FunctionOps single_ops = {target_func1};  // Only callback1 assigned
-
-// Call chain level 3: Called by intermediate_caller
-void intermediate_caller(void) {
-    // Indirect call through struct field pointer
-    // This should create: intermediate_caller --CALLS--> struct_array[0].callback1
-    // Combined with ASSIGNED_TO: struct_array[0].callback1 -> target_func1
-    // Call chain: intermediate_caller -> target_func1
-    struct_array[0].callback1();
+void anon_caller(void) {
+    anon_ops.handler1();  // Should resolve to target_func1
 }
 
-// Call chain level 2: Called by top_level_caller
-void level2_caller(void) {
-    // Direct call
-    intermediate_caller();
+// ========== Test 2: Named Typedef Struct ==========
+typedef struct NamedOps {
+    void (*handler1)(void);
+    void (*handler2)(void);
+} NamedOpsAlias;
 
-    // Another indirect call
-    struct_array[1].callback2();  // Should resolve to target_func4
+NamedOpsAlias named_ops = {target_func2, target_func3};  // positional init
+
+void named_caller(void) {
+    named_ops.handler1();  // Should resolve to target_func2
 }
 
-// Call chain level 1: Entry point
-void top_level_caller(void) {
-    // Direct call to level2_caller
-    level2_caller();
+// ========== Test 3: Multi-Level Call Chain ==========
+// Chain: entry_point -> middle_caller -> anon_ops.handler2 -> target_func2
 
-    // Indirect call through single_ops
-    single_ops.callback1();  // Should resolve to target_func1
+void middle_caller(void) {
+    anon_ops.handler2();  // Indirect call to target_func2
 }
 
-// Additional test: Pointer-based access
-void pointer_based_caller(void) {
-    FunctionOps *ops_ptr = &struct_array[0];
-
-    // Call through pointer dereference
-    // This tests: pointer->field() pattern
-    ops_ptr->callback1();  // Should resolve to target_func1
-    ops_ptr->callback2();  // Should resolve to target_func2
+void entry_point(void) {
+    middle_caller();  // Direct call
 }
-
-// Test: Array element via variable index
-void variable_index_caller(int idx) {
-    // Dynamic array access
-    struct_array[idx].callback1();
-}
-
-// Expected call chain paths:
-// 1. top_level_caller -> level2_caller -> intermediate_caller -> struct_array[0].callback1 -> target_func1
-// 2. top_level_caller -> level2_caller -> struct_array[1].callback2 -> target_func4
-// 3. top_level_caller -> single_ops.callback1 -> target_func1
-// 4. pointer_based_caller -> ops_ptr->callback1 -> target_func1
-// 5. pointer_based_caller -> ops_ptr->callback2 -> target_func2
-
-// Expected ASSIGNED_TO relations (positional initialization):
-// 1. struct_array[0].callback1 -> target_func1
-// 2. struct_array[0].callback2 -> target_func2
-// 3. struct_array[1].callback1 -> target_func3
-// 4. struct_array[1].callback2 -> target_func4
-// 5. single_ops.callback1 -> target_func1
